@@ -2,7 +2,13 @@ import re
 from array import *
 import sys
 
-
+def calcfuel(pos,p):
+        fuel = 0
+        for t in pos:
+                fuel = fuel + abs(t - p)
+#        print("position {}, fuel {}".format(p,fuel))
+        return fuel
+        
 def doit(filename):
 	file = open(filename, 'r')
 
@@ -32,6 +38,7 @@ def doit(filename):
 	return minfuel
 
 filename = sys.argv[1]
-print("Filename: {}, Minfuel: {}".format(filename,doit(filename)))
+print("Solution: {}".format(doit(filename)))
+
 
 

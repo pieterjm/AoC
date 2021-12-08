@@ -37,4 +37,4 @@ def doit(filename):
 	return minfuel
 
 filename = sys.argv[1]		
-print("filename: {}, minfuel: {}".format(filename,doit(filename)))
+print("Solution: {}".format(doit(filename)))

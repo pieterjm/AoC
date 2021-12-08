@@ -34,7 +34,7 @@ def sumunmarked(card):
                                 sum = sum + card[r][c]
         return sum
 
-
+solution = -1
 for number in numbers:
         # mark the number in all the cards
         for b in range(len(cards)):
@@ -54,7 +54,8 @@ for number in numbers:
                                         if cards[b][r][c] != -1:
                                                 bingo = False
                                 if bingo:
-                                        print("Card {} wins with score {}".format(b,sumunmarked(cards[b])*number))
+					solution = sumunmarked(cards[b])*number
+                                        #print("Card {} wins with score {}".format(b,sumunmarked(cards[b])*number))
                                         won[b] = True
 
                 # cols
@@ -65,11 +66,13 @@ for number in numbers:
                                         if cards[b][r][c] != -1:
                                                 bingo = False
                                 if bingo:
-                                        print("Card {} wins with score {}".format(b,sumunmarked(cards[b])*number))
+					solution = sumunmarked(cards[b])*number
+                                        #print("Card {} wins with score {}".format(b,sumunmarked(cards[b])*number))
                                         won[b] = True                                
                                 
 
 
+print(solution)
 
 
 

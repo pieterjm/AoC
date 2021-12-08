@@ -10,7 +10,7 @@ while True:
         line = file.readline()
         if not line:
                 break
-        print(line)
+#        print(line)
         coords = line.split()
         start = coords[0].split(',')
         stop  = coords[2].split(',')

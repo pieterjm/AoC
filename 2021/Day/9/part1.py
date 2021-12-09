@@ -1,20 +1,10 @@
 import re
-from array import *
 import sys
-
-def overlap(s1,s2):
-        num = 0
-        if len(s1) == 0:
-                print("string len is 0!!!!")
-                sys.exit()
-        for c in list(s1):
-                if c in list(s2):
-                        num = num + 1
-        return num
+import numpy as np
 
 def doit(filename):
-	file = open(filename, 'r')
-
+        file = open(filename, 'r')
+        sumlow = 0
         nrows = 0
         ncols = 0
         grid = []
@@ -34,32 +24,19 @@ def doit(filename):
 
             grid.append(row)
 
-        sumlow = 0
-        for r in range(nrows):
-            for c in range(ncols):
+        grid = np.array(grid)
+        grid = np.insert(grid,0,np.array([9] * ncols),0)
+        grid = np.insert(grid,nrows + 1,np.array([9] * ncols),0)
+        grid = np.insert(grid,0,np.array([9] * (nrows + 2)),1)
+        grid = np.insert(grid,ncols + 1,np.array([9] * (nrows + 2)),1)
 
-                numlow = 0
-                if (c == 0 ):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r][c -1]:
-                    numlow = numlow + 1
-                if (c == ncols -1):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r][c  + 1]:
-                    numlow = numlow + 1
-                if (r == 0):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r-1][c]:
-                    numlow = numlow + 1
-                if (r + 1 == nrows):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r+1][c]:
-                    numlow = numlow + 1
-
-
-                if ( numlow == 4 ):
-                    sumlow += grid[r][c] + 1
-                                                                  
+        for r in range(1,1 + nrows):
+                for c in range(1,1 + ncols):
+                        if (grid[(r,c-1)] > grid[(r,c)] and
+                            grid[(r,c+1)] > grid[(r,c)] and
+                            grid[(r-1,c)] > grid[(r,c)] and
+                            grid[(r+1,c)] > grid[(r,c)]):
+                                sumlow += 1 + grid[(r,c)]
         return sumlow
 
 filename = sys.argv[1]

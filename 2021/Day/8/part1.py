@@ -22,6 +22,6 @@ def doit(filename):
 
 
 filename = sys.argv[1]
-print("Filename: {}, Sum: {}".format(filename,doit(filename)))
+print(doit(filename))
 
 

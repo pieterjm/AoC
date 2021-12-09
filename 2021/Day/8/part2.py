@@ -133,6 +133,6 @@ def doit(filename):
         return sum
 
 filename = sys.argv[1]
-print("Filename: {}, Sum: {}".format(filename,doit(filename)))
+print(doit(filename))
 
 

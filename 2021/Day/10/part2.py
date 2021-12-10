@@ -12,7 +12,6 @@ def getpoints(chars):
                         #print(c,cs)
                         for cc in [['(',')',3],['{','}',1197],['[',']',57],['<','>',25137]]:
                                 if cs!=cc[0] and c == cc[1]:
-                                        print("illegal character on detected {}".format(c))
                                         return 0
 
         points = 0
@@ -29,22 +28,17 @@ def doit(filename):
         points = []
         while True:
                 line = file.readline()
-
                 if not line:
                         break
                 if len(line) == 0:
                         break
                 line = line.rstrip().lstrip()
-                
                 chars = list(line)
-                print(line)
-
                 score = getpoints(chars)
                 if score > 0:
                         points.append(score)
 
         points.sort()
-        
         return points[len(points)/2]
 
 

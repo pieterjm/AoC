@@ -12,7 +12,6 @@ def getpoints(chars):
                         #print(c,cs)
                         for cc in [['(',')',3],['{','}',1197],['[',']',57],['<','>',25137]]:
                                 if cs!=cc[0] and c == cc[1]:
-                                        print("illegal character on detected {}".format(c))
                                         return cc[2]
         return 0
 
@@ -30,12 +29,7 @@ def doit(filename):
                 line = line.rstrip().lstrip()
                 
                 chars = list(line)
-                print(line)
                 points = getpoints(chars)
-
-        
-                        
-                print(points)
                 sumpoints = sumpoints + points
                 
         return sumpoints

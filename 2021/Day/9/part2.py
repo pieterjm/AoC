@@ -33,15 +33,11 @@ def calcbasinsize(grid,nrows,r,ncols,c):
 
             
         # check all neighbours
-        if c > 0 and grid[r][c-1] < 9 and notinbasin(basin,r,c-1):
-            checklist.append([r,c-1])
-        if c + 1 < ncols and grid[r][c+1] < 9 and notinbasin(basin,r,c+1):        
-            checklist.append([r,c+1])
-        if r > 0 and grid[r-1][c] < 9 and notinbasin(basin,r-1,c):
-            checklist.append([r-1,c])
-        if r + 1 < nrows and grid[r+1][c] < 9 and notinbasin(basin,r+1,c):        
-            checklist.append([r+1,c])
-
+        for [i,j] in [[r,c-1],[r,c+1],[r-1,c],[r+1,c]]:
+            if 0 <= i < nrows and 0 <= j < ncols:
+                if notinbasin(basin,i,j):
+                    if grid[i][j] < 9:
+                        checklist.append([i,j])
     
     return size
     
@@ -78,27 +74,17 @@ def doit(filename):
             for c in range(ncols):
 
                 numlow = 0
-                if (c == 0 ):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r][c -1]:
-                    numlow = numlow + 1
-                if (c == ncols -1):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r][c  + 1]:
-                    numlow = numlow + 1
-                if (r == 0):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r-1][c]:
-                    numlow = numlow + 1
-                if (r + 1 == nrows):
-                    numlow = numlow + 1
-                elif grid[r][c] < grid[r+1][c]:
-                    numlow = numlow + 1
-#                print(r,c,grid[r][c],numlow)
+
+                for [i,j] in [[r,c-1],[r,c+1],[r-1,c],[r+1,c]]:
+                    if 0 <= i < nrows and 0 <= j < ncols:
+                        if grid[r][c] < grid[i][j]:
+                            numlow += 1
+                    else:
+                        numlow += 1    
+
 
                 if ( numlow == 4 ):
                     sumlow += grid[r][c] + 1
-
                     size = calcbasinsize(grid,nrows,r,ncols,c)
                     basins.append(size)
 

@@ -19,29 +19,25 @@ def findpath(path):
             continue
 
         Append = True
-        
-
-        
-        occ = {}
-        for p in path:
-            if p.islower():
-                if p in occ:
-                    occ[p] += 1                
-                else:
-                    occ[p] = 1
-
         if option == 'start' and 'start' in path:
             Append = False
-            
-        numtwo = 0
-        for p in occ:
-            if occ[p] > 2:
-                Append = False
-            if occ[p] == 2:
-                numtwo += 1
-        if numtwo > 1:
-            Append = False
 
+        if Append:
+            numtwo = 0
+            occ = {}
+            for p in path:
+                if p.islower():
+                    if p in occ:
+                        occ[p] += 1
+                        if occ[p] == 2:
+                            numtwo += 1
+                            if numtwo > 1:
+                                Append = False
+                        elif occ[p] > 2:
+                            Append = False
+                    else:
+                        occ[p] = 1
+                        
         if Append:
             options.append(option)
 

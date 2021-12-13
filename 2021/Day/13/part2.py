@@ -3,6 +3,8 @@ import sys
 import numpy as np
 
 def printpaper(paper):
+    paper = zip(*paper)
+    
     for row in paper:
         print("".join(row))
 

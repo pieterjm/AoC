@@ -1,39 +1,18 @@
 import re
 import sys
 import numpy as np
-
-rules = {}
-freq = {}
-stepl = 0
-
-def runner(pair, step):
-    global rules, freq, stepl
-
-    stepl += 1
-    if stepl % 10000000 == 0:
-        print(stepl)
-
-    if step == 0:
-        return 0
-
-    freq[rules[pair]] += 1
-    
-    l = runner(pair[0] + rules[pair], step - 1)
-    l += runner(rules[pair] + pair[1], step - 1)
-    return l + 1
-    
     
 def doit(filename):
     global freqmax, freqmin
     file = open(filename, 'r')
 
-        
+    # read start sequence
     sequence = file.readline()
     sequence = sequence.lstrip().rstrip()
     file.readline() # read empty line
-    global rules
+
+    # read rules
     rules = {}
-    
     while True:
         line = file.readline()
         if not line:
@@ -44,62 +23,61 @@ def doit(filename):
         line = line.rstrip().lstrip().split(" ")
         rules[line[0]] = line[2]
 
-    global freq
+    # really creating the sequence by inserting characters according
+    # to the result will make the program so slow that finding the
+    # solution will simply take very long.
+    # That is not required as we can split up the sequence in distinct
+    # pairs and track the amount of pairs in the sequence. In each step
+    # each pair is destroyed and creates two new pairs. As such all the
+    # same pairs in the sequence are processed in one go
 
-    freq = {}
-    freqs = {}
-    for pair in rules:
-        for c in list('ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
-            freq[c] = 0    
-        l = runner(pair, 24)
-        for c in list(freq):
-            if freq[c] == 0:
-                del freq[c]
-        freqs[pair] = freq.copy()
-
-    print("first part done", stepl)
-    
-    sfreq = {}        
-    for c in list('ABCDEFGHIJKLMNOPQRSTUVWXYZ'):
-        sfreq[c] = 0
-
-        
-    for s in range(16):
-        print(s)
-        i = 0
-        while i < len(sequence) - 1:
-            pair = sequence[i] + sequence[i+1]
-            if pair in rules:
-                i += 1
-                sequence = sequence[:i] + rules[pair] + sequence[i:]
-            i += 1
-
-    freq = {}
-    for c in list(sequence):
-        if c in freq:
-            freq[c] += 1
-        else:
-            freq[c] = 1
-
-
-        
-        
+    # split the sequnce up into seperate pairs and count how many there are
+    pairs = {}
     for i in range(len(sequence)-1):
         pair = sequence[i] + sequence[i+1]
-        for c in freqs[pair]:
-            sfreq[c] += freqs[pair][c]
-    for c in sequence:
-        sfreq[c] += 1
+        if pair in pairs:
+            pairs[pair] += 1
+        else:
+            pairs[pair] = 1
 
-            
-    for c in list(sfreq):
-        if sfreq[c] == 0:
-            del sfreq[c]
+    # do forty steps
+    for step in range(40):
 
+        # create a new dictionary of the pairs and their amount
+        newpairs = {}
+        for pair in pairs:
+            # each pair is split into two new pairs
+            for p in [pair[0]+rules[pair],rules[pair]+pair[1]]:
 
+                # add the count number of new pairs 
+                if p in newpairs:
+                    newpairs[p] += pairs[pair]
+                else:
+                    newpairs[p] = pairs[pair]
+
+        # swap the dictionary
+        pairs = newpairs.copy()
+
+        
+        print(step,sum(pairs.values())+1)
+
+    # calculate the frequency of all letters
+    freq = {}
+    for pair in pairs:
+
+        # take the first letter of each pair
+        c = pair[0]
+        if c in freq:
+            freq[c] += pairs[pair]
+        else:
+            freq[c] = pairs[pair]
+
+    # add the last letter of the sequence as it is not in a pair
+    freq[sequence[-1]] += 1
+
+    # calculate the difference between the maximum and the minimum
+    return (max(freq.values())-min(freq.values()))
     
-    print(max(sfreq.values()) - min(sfreq.values()))
-            
 filename = sys.argv[1]
 print(doit(filename))
 

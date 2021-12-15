@@ -2,45 +2,6 @@ import re
 import sys
 import numpy as np
 
-grid = []
-nrows = ncols = 0
-minscore = 0
-minpath = []
-
-def walk(path,score):
-    global grid,nrows,ncols,minscore,minpath
-
-    # get the current position
-    pos = path[-1]
-
-    # if current position is the destination
-    if pos[0] == nrows - 1 and pos[1] == ncols - 1:
-        if score + grid[pos[0]][pos[1]] < minscore:
-            minscore = score + grid[pos[0]][pos[1]]
-            minpath = path + pos
-            print("new minimum",minscore)
-        return
-        
-    # potential directions are up,down,left,right # for now we only look right or down
-    directions = [[pos[0]+1,pos[1]],[pos[0],pos[1]+1]] #,[pos[0]-1,pos[1]],[pos[0],pos[1]-1]]:
-    minpscore = 10
-    for p in directions:
-        if 0 <= p[0] < nrows and 0 <= p[1] < ncols:
-            minpscore = min(grid[p[0]][p[1]],minpscore)
-
-    #
-    for p in directions:
-        # only if p is in the grid and only if p has not been visited before
-        if 0 <= p[0] < nrows and 0 <= p[1] < ncols:
-            if not p in path:                
-                if grid[p[0]][p[1]] == minpscore:
-                    if (score + grid[p[0]][p[1]] + nrows - p[0] + ncols - p[1]) < minscore:
-                        walk(path + [p],score + grid[p[0]][p[1]])
-            
-            
-            
-
-
 def doit(filename):
     global grid,nrows,ncols,minscore,minpath
     
@@ -64,6 +25,25 @@ def doit(filename):
     ncols = len(grid[0])
     print("rows = {}, cols = {}".format(nrows,ncols))
 
+    # create a new grid, five times larger
+    ngrid = []
+    for r in range(nrows * 5):
+        row = []
+        for c in range(ncols * 5):
+            row.append(0)
+        ngrid.append(row)
+
+    for r in range(nrows):
+        for c in range(ncols):
+            val = grid[r][c]
+            for i in range(5):
+                for j in range(5):
+                    ngrid[r + i * nrows][c + j * ncols] = ((val + i + j - 1) % 9)+1
+        ngrid.append(row)
+    nrows = nrows * 5
+    ncols = ncols * 5
+
+    
     # First approach
     # Calculate the start minimal score and path of an arbitrary line (diagonal snake)
     # Then walk through the grid towards the destination, if score larger than minimal, stop walking
@@ -91,11 +71,16 @@ def doit(filename):
     current = [0,0]
     d[0][0] = 0
     v[0][0] = True
-    path = [current]
+
+    # All nodes
+    edgenodes = []
 
     # create list of nodes adjacent to the path
-    for s in range (ncols * nrows):
-        print(s)
+    total = ncols * nrows
+    stepsize = total / 100
+    for s in range (total):
+        if s % stepsize == 0:
+            print(s /(total * 1.0))
         r = current[0]
         c = current[1]
 
@@ -103,28 +88,31 @@ def doit(filename):
         # find adjacent nodes and update distance
         for p in [[r,c-1],[r,c+1],[r-1,c],[r+1,c]]:
             if 0 <= p[0] < nrows and 0 <= p[1] < ncols and v[p[0]][p[1]] == False:
+                edgenodes.append(p)
+
                 # distance to neighbour
-                distance = d[r][c] + grid[p[0]][p[1]]
+                distance = d[r][c] + ngrid[p[0]][p[1]]
                 if distance < d[p[0]][p[1]]:
                     d[p[0]][p[1]] = distance
 
         # mark as visited
         v[r][c] = True
-
-                    
+        
         # new current is lowest score
         mindist = 10000000
         current = [0,0]
-        for r in range(nrows):
-            for c in range(ncols):
-                if d[r][c] < mindist:
-                    if v[r][c] == False:
-                        current = [r,c]
-                        mindist = d[r][c]
+
+        # we could search in the area of the current node to speed things up
+        for p in list(edgenodes):
+            # remove if already visited
+            if v[p[0]][p[1]]:
+                edgenodes.remove(p)  
+            elif d[p[0]][p[1]] < mindist:
+                current = [p[0],p[1]]
+                mindist = d[p[0]][p[1]]
 
     print(d[nrows-1][ncols -1])
                 
 filename = sys.argv[1]
 print(doit(filename))
-
 

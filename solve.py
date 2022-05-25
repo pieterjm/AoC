@@ -6,6 +6,7 @@ import re
 year = None
 day = None
 
+
 if len(sys.argv) == 2:
 	year = sys.argv[1]
 elif len(sys.argv) == 3:
